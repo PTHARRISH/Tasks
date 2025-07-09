@@ -1,0 +1,34 @@
+# === Python/Django ===
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.swp
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+
+# Django static/media
+/staticfiles/
+/media/
+/static/
+/dist/
+
+# Django secrets
+*.env
+
+
+# VSCode/PyCharm/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# === Node/Vite ===
+node_modules/
+dist/
+.build/
+*.log
+
