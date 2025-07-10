@@ -10,16 +10,20 @@ export default function TodoPage() {
   const [editId, setEditId] = useState(null);
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [nextUrl, setNextUrl] = useState(null);
+  const [prevUrl, setPrevUrl] = useState(null);
 
   useEffect(() => {
-    fetchTodos();
+    fetchTodos(API_URL);
   }, []);
 
-  const fetchTodos = async () => {
+  const fetchTodos = async (url = API_URL) => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(url);
       const data = await res.json();
-      setTodos(Array.isArray(data) ? data : data.results || []);
+      setTodos(data.results || []);
+      setNextUrl(data.next);
+      setPrevUrl(data.previous);
     } catch (err) {
       console.error("Fetch error", err);
     }
@@ -127,7 +131,7 @@ export default function TodoPage() {
               placeholder="Name"
               value={name}
               onChange={handleInputChange(setName, "name")}
-              maxLength={60} // extra buffer to allow typing + show error
+              maxLength={60}
             />
             {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
           </div>
@@ -200,6 +204,31 @@ export default function TodoPage() {
           )}
         </tbody>
       </table>
+
+      <div className="flex justify-between mt-4">
+        <button
+          disabled={!prevUrl}
+          onClick={() => fetchTodos(prevUrl)}
+          className={`px-4 py-2 rounded ${
+            prevUrl
+              ? "bg-gray-200 hover:bg-gray-300"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Previous
+        </button>
+        <button
+          disabled={!nextUrl}
+          onClick={() => fetchTodos(nextUrl)}
+          className={`px-4 py-2 rounded ${
+            nextUrl
+              ? "bg-gray-200 hover:bg-gray-300"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

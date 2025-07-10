@@ -3,7 +3,7 @@ import re
 import requests
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
-from rest_framework import filters, generics, viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -20,14 +20,23 @@ from .serializers import (
     UserDashboardSerializer,
 )
 
+# from django.views.decorators.csrf import csrf_exempt
+# from rest_framework.decorators import api_view, parser_classes
+# from rest_framework.parsers import JSONParser
+
+
 User = get_user_model()
+
+
+class TodoPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = "page_size"
 
 
 class TodoListViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["name", "description"]
+    pagination_class = TodoPagination
 
 
 @api_view(["GET"])
@@ -54,11 +63,6 @@ def ifsc_code_check(request, ifsc_code):
         return Response(response.json())
 
     return Response({"error": "Invalid IFSC code or not found"}, status=404)
-
-
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, parser_classes
-from rest_framework.parsers import JSONParser
 
 
 # @csrf_exempt
@@ -109,8 +113,6 @@ class FileUploadViewSet(viewsets.ModelViewSet):
     queryset = FileUpload.objects.all().order_by("-uploaded_at")
     serializer_class = FileUploadSerializer
     pagination_class = FilePagination
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["file"]
 
 
 class ImagePagination(PageNumberPagination):
