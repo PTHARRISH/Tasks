@@ -56,7 +56,7 @@ export default function CookieManager() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <Toaster />
-      <h2 className="text-2xl font-bold mb-4">Client-side Cookie Manager</h2>
+      <h2 className="text-2xl font-bold mb-4">Cookie Manager</h2>
 
       <div className="flex gap-2 mb-6">
         <input
