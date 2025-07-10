@@ -12,5 +12,5 @@ class FileUpload(models.Model):
 
 
 class UploadedImage(models.Model):
-    image = models.ImageField(upload_to="images/")
+    image = models.ImageField(upload_to="uploads/images/")
     uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -1,13 +1,15 @@
 import re
 
 import requests
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
 from rest_framework import filters, generics, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import FileUpload, Todo, UploadedImage
 from .serializers import (
@@ -17,6 +19,8 @@ from .serializers import (
     TodoSerializer,
     UserDashboardSerializer,
 )
+
+User = get_user_model()
 
 
 class TodoListViewSet(viewsets.ModelViewSet):
@@ -52,40 +56,73 @@ def ifsc_code_check(request, ifsc_code):
     return Response({"error": "Invalid IFSC code or not found"}, status=404)
 
 
-@api_view(["GET", "POST", "DELETE"])
-def cookie_view(request):
-    if request.method == "POST":
-        key = request.data.get("key")
-        value = request.data.get("value")
-        if not key or not value:
-            return Response({"error": "Key and Value are required"}, status=400)
-        response = Response({"message": "Cookie Set"})
-        response.set_cookie(key, value)
-        return response
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
 
-    elif request.method == "DELETE":
-        key = request.data.get("key")
-        response = Response({"message": "Cookie Deleted"})
-        response.delete_cookie(key)
-        return response
 
-    # GET
-    cookies = request.COOKIES
-    return Response({"cookies": cookies})
+# @csrf_exempt
+# @api_view(["GET", "POST", "DELETE"])
+# @parser_classes([JSONParser])  # Ensures JSON body is parsed for DELETE
+# def cookie_view(request):
+#     if request.method == "POST":
+#         key = request.data.get("key")
+#         value = request.data.get("value")
+#         print(key, value)
+#         if not key or not value:
+#             return Response({"error": "Key and Value are required"}, status=400)
+
+#         response = Response({"message": "Cookie Set"})
+#         response.set_cookie(
+#             key,
+#             value,
+#             samesite="Lax",  # or "None" if using HTTPS + cross-site
+#             secure=False,  # True if using HTTPS
+#         )
+#         print("Outgoing cookies:", response.cookies)
+#         return response  # ✅ return the Response object with the cookie
+
+#     elif request.method == "DELETE":
+#         try:
+#             key = request.data.get("key")
+#         except Exception:
+#             return Response({"error": "Invalid JSON"}, status=400)
+
+#         if not key:
+#             return Response({"error": "Key is required for deletion"}, status=400)
+
+#         response = Response({"message": "Cookie Deleted"})
+#         response.delete_cookie(key)
+#         return response  # ✅ return deletion response
+
+#     # ✅ GET method – show incoming cookies from client
+#     print("Incoming cookies:", request.COOKIES)
+#     return Response({"cookies": request.COOKIES})
+
+
+class FilePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
 
 
 class FileUploadViewSet(viewsets.ModelViewSet):
     queryset = FileUpload.objects.all().order_by("-uploaded_at")
     serializer_class = FileUploadSerializer
+    pagination_class = FilePagination
     filter_backends = [filters.SearchFilter]
     search_fields = ["file"]
+
+
+class ImagePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
 
 class ImageUploadViewSet(viewsets.ModelViewSet):
     queryset = UploadedImage.objects.all().order_by("-uploaded_at")
     serializer_class = ImageUploadSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["image"]
+    pagination_class = ImagePagination
 
 
 class SignupView(generics.CreateAPIView):
@@ -106,7 +143,16 @@ class LoginView(APIView):
         if not user:
             return Response({"error": "Invalid email or password."}, status=400)
 
-        return Response({"message": "Login successful", "username": user.username})
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "message": "Login successful",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "username": user.username,
+            }
+        )
 
 
 class DashboardUserListView(generics.ListAPIView):
