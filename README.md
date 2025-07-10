@@ -12,34 +12,43 @@ This is a full-featured full-stack web application built using **Django (Python 
 - Form validation with character length limits.
 - Responsive table with inline editing.
 
+![Todo List UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/Todolist.png)
+
+
 ### ✅ 2. Razorpay IFSC Code Lookup
 - Integrates with Razorpay IFSC public API.
 - Validates IFSC format (must be 11 alphanumeric characters).
 - Retrieves bank details based on valid IFSC.
+![Razorpay IFSC Code Lookup UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/ifsc%20code.png)
 
 ### ✅ 3. User Authentication
 #### Signup
 - Fields: `username`, `email`, `password`, `confirm password`.
 - Validations: password confirmation, required fields.
+![User Authentication signup UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/Signup.png)
 
 #### Login
 - Fields: `email`, `password`.
 - JWT/session-based setup.
+![Login UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/Login.png)
 
 ### ✅ 4. File Upload
 - Upload `.txt`, `.csv`, and time log files.
 - Stores files locally in a secure media folder.
 - Shows uploaded file metadata.
+![File Upload UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/file%20upload.png)
 
 ### ✅ 5. Image Upload
 - Accepts `.jpg`, `.jpeg`, and `.png` files.
 - Stores user profile or image uploads locally.
 - Displays thumbnails or previews post-upload.
+![Image Upload UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/image%20upload.png)
 
 ### ✅ 6. Cookie Management
 - Set, view, and delete cookies using React and Django.
 - Demonstrates `SameSite`, `secure`, and expiration control.
 - Cookies handled both via API and directly from client.
+![Cookie UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/Cookie.png)
 
 ### ✅ 7. User Table Display
 - Dynamic rendering of user data:
@@ -47,6 +56,7 @@ This is a full-featured full-stack web application built using **Django (Python 
   - `Email`
   - `Status (Active/Inactive)`
 - Styled table with clean layout using Tailwind CSS.
+![User Table Display UI](https://raw.githubusercontent.com/PTHARRISH/Tasks/main/media/uploads/images/Dashboard.png)
 
 ---
 
